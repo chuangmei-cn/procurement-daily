@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>采购平台每日巡检</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --card-bg: #ffffff;
+    --primary: #1a73e8;
+    --primary-hover: #1557b0;
+    --text: #1f2937;
+    --text-secondary: #6b7280;
+    --border: #e5e7eb;
+    --accent-green: #10b981;
+    --accent-orange: #f59e0b;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .header {
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header h1 .badge {
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--accent-green);
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+  .header-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .header-info .date {
+    font-weight: 600;
+    color: var(--text);
+  }
+  .keywords-bar {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .keywords-bar .label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+  .keyword-tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: var(--primary);
+    padding: 4px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .keyword-tag::before { content: "#"; opacity: 0.5; margin-right: 2px; }
+  .platform-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+  .platform-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px 20px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.2s, transform 0.15s;
+    display: flex;
+    flex-direction: column;
+  }
+  .platform-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+  }
+  .platform-card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .platform-card .platform-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+  }
+  .platform-card .platform-domain {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .platform-card .status-badge {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .status-badge.login-required {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .status-badge.public {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .platform-card .actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 12px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.15s;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-secondary {
+    background: #f3f4f6;
+    color: var(--text);
+  }
+  .btn-secondary:hover { background: #e5e7eb; }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+  .btn-outline:hover { background: #e8f0fe; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .search-result-section {
+    max-width: 1200px;
+    margin: 32px auto 0;
+  }
+  .search-result-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .search-result-section h2 .count {
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-secondary);
+  }
+  .result-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .result-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+    transition: box-shadow 0.15s;
+  }
+  .result-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .result-item .result-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary);
+    text-decoration: none;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .result-item .result-title:hover { text-decoration: underline; }
+  .result-item .result-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .result-item .result-meta .tag {
+    display: inline-block;
+    background: #f3f4f6;
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+  }
+  .no-results {
+    background: var(--card-bg);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+  .footer-note {
+    max-width: 1200px;
+    margin: 32px auto 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  @media (max-width: 640px) {
+    body { padding: 12px; }
+    .platform-grid { grid-template-columns: 1fr; }
+    .header { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>
+    📋 采购平台每日巡检
+    <span class="badge">水泵 · 防汛 · 应急</span>
+  </h1>
+  <div class="header-info">
+    <span class="date" id="currentDate"></span>
+  </div>
+</div>
+
+<div class="keywords-bar">
+  <span class="label">关键词</span>
+  <span class="keyword-tag">水泵</span>
+  <span class="keyword-tag">防汛</span>
+  <span class="keyword-tag">应急</span>
+  <span style="font-size:12px;color:var(--text-secondary);margin-left:4px;">点击各平台按钮，登录后搜索以上关键词</span>
+</div>
+
+<div class="platform-grid" id="platformGrid"></div>
+
+<div class="search-result-section" id="autoResults">
+  <h2>🤖 今日自动检索 <span class="count" id="resultCount"></span></h2>
+  <div id="resultList" class="result-list"></div>
+</div>
+
+<div class="footer-note">
+  ⏰ 自动提醒：周一到周六 8:30 · 数据来源：各平台公开招标公告 · 登录后可查看详细信息
+</div>
+
+<script>
+(function() {
+  // 显示今日日期
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('zh-CN', {
+    year: 'numeric', month: 'long', day: 'numeric', weekday: 'long'
+  });
+
+  // 平台列表
+  var platforms = [
+    {
+      name: '江苏国采',
+      domain: 'ec.jsgx.net',
+      url: 'https://ec.jsgx.net/#/portalsitehome',
+      status: '需登录',
+      desc: '国信慧采平台，登录后在搜索框搜索关键词'
+    },
+    {
+      name: '中国中铁',
+      domain: 'eproport.crecgec.com',
+      url: 'https://eproport.crecgec.com/#/home',
+      status: '需登录',
+      desc: '中铁鲁班商务网，登录后搜索招标公告'
+    },
+    {
+      name: '华润守正',
+      domain: 'supportal.crccep.cn',
+      url: 'https://supportal.crccep.cn/door',
+      status: '需登录',
+      desc: '华润集团守正电子招标平台'
+    },
+    {
+      name: '三一集团',
+      domain: 'igsp.sany.com.cn',
+      url: 'https://igsp.sany.com.cn/sf/workplace',
+      status: '需登录',
+      desc: '全球供应商门户，登录后搜索采购公告'
+    },
+    {
+      name: '深圳交易集团',
+      domain: 'www.szecp.com.cn',
+      url: 'https://www.szecp.com.cn/first_cggg/index.html',
+      status: '需登录',
+      desc: '华润守正采购交易平台，登录后搜索',
+      extraLinks: [
+        { label: '🔍 公开招标公告', url: 'https://www.szecp.com.cn/first_cggg/index.html' }
+      ]
+    },
+    {
+      name: '中国化学',
+      domain: 'supplier.cncecyc.com',
+      url: 'https://supplier.cncecyc.com/tpbidder/frame/fui/pages/themes/elegant/elegant?pageId=cncec-elegant',
+      status: '需登录',
+      desc: '中国化学电子招标平台，登录后搜索'
+    },
+    {
+      name: '山东高速',
+      domain: 'www.sdicc.com.cn',
+      url: 'https://www.sdicc.com.cn/gt-jy-toubiao/index.html#/dashboard',
+      status: '需登录',
+      desc: '山东高速招标采购平台，登录后搜索'
+    }
+  ];
+
+  // 渲染平台卡片
+  var grid = document.getElementById('platformGrid');
+  platforms.forEach(function(p) {
+    var card = document.createElement('div');
+    card.className = 'platform-card';
+
+    var header = document.createElement('div');
+    header.className = 'card-header';
+    header.innerHTML = '<div><div class="platform-name">' + p.name + '</div><div class="platform-domain">' + p.domain + '</div></div>' +
+      '<span class="status-badge login-required">' + p.status + '</span>';
+    card.appendChild(header);
+
+    var desc = document.createElement('div');
+    desc.style.cssText = 'font-size:12px;color:var(--text-secondary);margin-bottom:4px;';
+    desc.textContent = p.desc;
+    card.appendChild(desc);
+
+    var actions = document.createElement('div');
+    actions.className = 'actions';
+
+    var goBtn = document.createElement('a');
+    goBtn.className = 'btn btn-primary btn-sm';
+    goBtn.href = p.url;
+    goBtn.target = '_blank';
+    goBtn.textContent = '🚀 打开平台';
+    actions.appendChild(goBtn);
+
+    if (p.extraLinks) {
+      p.extraLinks.forEach(function(link) {
+        var extraBtn = document.createElement('a');
+        extraBtn.className = 'btn btn-outline btn-sm';
+        extraBtn.href = link.url;
+        extraBtn.target = '_blank';
+        extraBtn.textContent = link.label;
+        actions.appendChild(extraBtn);
+      });
+    }
+
+    card.appendChild(actions);
+    grid.appendChild(card);
+  });
+
+  // --- 自动检索：深圳公开招标数据 ---
+  var keywords = ['水泵', '防汛', '应急'];
+  var results = [];
+
+  function fetchBiddingData() {
+    var apiUrl = 'https://www.szecp.com.cn/indexRH_zb/index_16707.json';
+    var apiUrl2 = 'https://www.szecp.com.cn/indexZB_fz/index_16708.json';
+
+    Promise.all([
+      fetch(apiUrl).then(function(r) { return r.ok ? r.json() : []; }),
+      fetch(apiUrl2).then(function(r) { return r.ok ? r.json() : []; })
+    ])
+    .then(function(data) {
+      var allItems = [];
+      data.forEach(function(category) {
+        if (!category) return;
+        if (Array.isArray(category)) {
+          category.forEach(function(cat) {
+            if (cat.childrens) allItems = allItems.concat(cat.childrens);
+            if (cat.childrens2) allItems = allItems.concat(cat.childrens2);
+          });
+        }
+      });
+
+      // 按关键词过滤（支持在标题和采购类型中搜索）
+      var matched = [];
+      allItems.forEach(function(item) {
+        var title = (item.title || '') + ' ' + (item.purchaseType || '') + ' ' + (item.purchaseRegion || '');
+        var matchedKeywords = keywords.filter(function(kw) { return title.indexOf(kw) !== -1; });
+        if (matchedKeywords.length > 0) {
+          matched.push({
+            title: item.title,
+            url: item.url,
+            date: item.publishDate || '',
+            type: item.purchaseType || '',
+            region: item.purchaseRegion || '',
+            keywords: matchedKeywords
+          });
+        }
+      });
+
+      // 按日期排序
+      matched.sort(function(a, b) { return b.date.localeCompare(a.date); });
+
+      renderResults(matched);
+    })
+    .catch(function(err) {
+      document.getElementById('resultList').innerHTML = '<div class="no-results">⚠️ 自动检索暂不可用</div>';
+      document.getElementById('resultCount').textContent = '';
+    });
+  }
+
+  function renderResults(items) {
+    var list = document.getElementById('resultList');
+    var countEl = document.getElementById('resultCount');
+
+    if (items.length === 0) {
+      list.innerHTML = '<div class="no-results">✅ 今日暂无匹配"水泵 / 防汛 / 应急"的招标公告</div>';
+      countEl.textContent = '(0 条)';
+      return;
+    }
+
+    countEl.textContent = '(' + items.length + ' 条)';
+    list.innerHTML = '';
+
+    items.forEach(function(item) {
+      var el = document.createElement('div');
+      el.className = 'result-item';
+
+      var titleLink = document.createElement('a');
+      titleLink.className = 'result-title';
+      titleLink.href = item.url;
+      titleLink.target = '_blank';
+      titleLink.textContent = item.title;
+      el.appendChild(titleLink);
+
+      var meta = document.createElement('div');
+      meta.className = 'result-meta';
+      meta.innerHTML = '<span>📅 ' + item.date + '</span>' +
+        (item.type ? '<span class="tag">' + item.type + '</span>' : '') +
+        (item.keywords ? '<span class="tag" style="background:#e8f0fe;color:#1a73e8;">🔑 ' + item.keywords.join(', ') + '</span>' : '');
+      el.appendChild(meta);
+
+      list.appendChild(el);
+    });
+  }
+
+  // 延迟执行，不影响页面渲染
+  setTimeout(fetchBiddingData, 100);
+
+})();
+</script>
+
+</body>
+</html>
