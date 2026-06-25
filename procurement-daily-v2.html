@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>采购平台每日巡检 - 水泵·防汛·应急</title>
+<style>  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #f0f2f5;
+    color: #333;
+    padding: 0;
+    min-height: 100vh;
+  }
+  .top-bar {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .top-bar-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .top-bar h1 {
+    font-size: 18px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .top-bar h1 .count-badge {
+    font-size: 11px;
+    font-weight: 500;
+    background: #e8f0fe;
+    color: #1a73e8;
+    padding: 2px 10px;
+    border-radius: 10px;
+  }
+  .top-bar .sub {
+    font-size: 12px;
+    color: #999;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 24px;
+  }
+  .tags {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .tags .label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #666;
+  }
+  .tag {
+    background: #e8f0fe;
+    color: #1a73e8;
+    padding: 3px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .tag::before { content: "#"; opacity: 0.5; margin-right: 1px; }
+  .tags .hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-left: 4px;
+  }
+  .section {
+    background: #fff;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid #eef0f2;
+  }
+  .section h2 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #1a73e8;
+    border-left: 3px solid #1a73e8;
+    padding-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section h2 .count {
+    font-size: 11px;
+    font-weight: 400;
+    color: #999;
+  }
+  .grid {
+    display: grid;
+    gap: 6px;
+  }
+  /* 数量多的用 4 列，适中用 3 列，少用 2 列 */
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-2 { grid-template-columns: repeat(2, 1fr); }
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 7px 4px;
+    background: #f7f8fa;
+    color: #333;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border: 1px solid transparent;
+    transition: all 0.12s;
+  }
+  .btn:hover {
+    background: #e8f0fe;
+    color: #1a73e8;
+    border-color: #1a73e8;
+  }
+  .btn:active { background: #d2e3fc; }
+  .btn.primary {
+    background: #1a73e8;
+    color: #fff;
+    font-weight: 500;
+  }
+  .btn.primary:hover {
+    background: #1557b0;
+    border-color: #1557b0;
+  }
+  .btn.outline {
+    background: #fff;
+    color: #1a73e8;
+    border: 1px solid #1a73e8;
+  }
+  .btn.outline:hover {
+    background: #e8f0fe;
+  }
+  .footer {
+    text-align: center;
+    color: #bbb;
+    font-size: 11px;
+    padding: 12px 0 24px;
+  }
+  hr {
+    border: none;
+    border-top: 1px dashed #e5e7eb;
+    margin: 10px 0;
+  }
+
+  /* 响应式 */
+  @media (max-width: 900px) {
+    .grid-4 { grid-template-columns: repeat(3, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .grid-4, .grid-3, .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 12px; }
+    .top-bar-inner { padding: 10px 16px; }
+    .top-bar h1 { font-size: 16px; }
+  }
+  @media (max-width: 400px) {
+    .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  }</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-bar-inner">
+    <h1>
+      采购平台每日巡检
+      <span class="count-badge">70+ 平台</span>
+    </h1>
+    <div class="sub">周一到周六 8:30 · 关键词：水泵 防汛 应急</div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tags">
+    <span class="label">关键词</span>
+    <span class="tag">水泵</span>
+    <span class="tag">防汛</span>
+    <span class="tag">应急</span>
+    <span class="hint">点击下方各平台按钮，登录后搜索以上关键词</span>
+  </div>
+
+<!-- 一、省级公共资源交易平台 -->
+<div class="section">
+  <h2>省级公共资源交易平台</h2>
+  <div class="grid grid-4">
+    <a class="btn" href="https://ggzyfw.beijing.gov.cn" target="_blank">北京</a>
+    <a class="btn" href="https://ggzy.zwfwb.tj.gov.cn" target="_blank">天津</a>
+    <a class="btn" href="http://www.hebggzyfwpt.cn" target="_blank">河北</a>
+    <a class="btn" href="http://prec.sxzwfw.gov.cn" target="_blank">山西</a>
+    <a class="btn" href="http://ggzyjy.nmg.gov.cn" target="_blank">内蒙古</a>
+    <a class="btn" href="http://www.lnggzy.gov.cn" target="_blank">辽宁</a>
+    <a class="btn" href="http://www.jl.gov.cn/ggzy" target="_blank">吉林</a>
+    <a class="btn" href="http://www.hljggzyjyw.org.cn" target="_blank">黑龙江</a>
+    <a class="btn" href="http://www.shggzy.com" target="_blank">上海</a>
+    <a class="btn" href="http://jsggzy.jszwfw.gov.cn" target="_blank">江苏</a>
+    <a class="btn" href="http://www.zjpubservice.com" target="_blank">浙江</a>
+    <a class="btn" href="http://ggzy.ah.gov.cn" target="_blank">安徽</a>
+    <a class="btn" href="https://ggzyfw.fujian.gov.cn" target="_blank">福建</a>
+    <a class="btn" href="http://jxsggzy.cn" target="_blank">江西</a>
+    <a class="btn" href="http://ggzyjy.shandong.gov.cn" target="_blank">山东</a>
+    <a class="btn" href="http://www.hnggzy.net" target="_blank">河南</a>
+    <a class="btn" href="https://www.hbggzyfwpt.cn" target="_blank">湖北</a>
+    <a class="btn" href="https://www.hnsggzy.com" target="_blank">湖南</a>
+    <a class="btn" href="https://www.gdggzy.org.cn" target="_blank">广东</a>
+    <a class="btn" href="http://gxggzy.gxzf.gov.cn" target="_blank">广西</a>
+    <a class="btn" href="http://zw.hainan.gov.cn/ggzy" target="_blank">海南</a>
+    <a class="btn" href="https://www.cqqgzy.com" target="_blank">重庆</a>
+    <a class="btn" href="http://ggzyjy.sc.gov.cn" target="_blank">四川</a>
+    <a class="btn" href="http://ggzy.guizhou.gov.cn" target="_blank">贵州</a>
+    <a class="btn" href="http://ggzy.yn.gov.cn" target="_blank">云南</a>
+    <a class="btn" href="http://ggzy.xizang.gov.cn" target="_blank">西藏</a>
+    <a class="btn" href="http://www.sxggzyjy.cn" target="_blank">陕西</a>
+    <a class="btn" href="http://ggzyjy.gansu.gov.cn" target="_blank">甘肃</a>
+    <a class="btn" href="http://www.qhggzyjy.gov.cn" target="_blank">青海</a>
+    <a class="btn" href="http://www.nxggzyjy.org" target="_blank">宁夏</a>
+    <a class="btn" href="http://ggzy.xinjiang.gov.cn" target="_blank">新疆</a>
+  </div>
+</div>
+
+<!-- 二、省级政府采购网 -->
+<div class="section">
+  <h2>省级政府采购网</h2>
+  <div class="grid grid-4">
+    <a class="btn outline" href="http://www.ccgp-beijing.gov.cn" target="_blank">北京</a>
+    <a class="btn outline" href="http://www.ccgp-tianjin.gov.cn" target="_blank">天津</a>
+    <a class="btn outline" href="http://www.ccgp-hebei.gov.cn" target="_blank">河北</a>
+    <a class="btn outline" href="http://www.ccgp-shanxi.gov.cn" target="_blank">山西</a>
+    <a class="btn outline" href="http://www.ccgp-neimenggu.gov.cn" target="_blank">内蒙古</a>
+    <a class="btn outline" href="http://www.ccgp-liaoning.gov.cn" target="_blank">辽宁</a>
+    <a class="btn outline" href="http://www.ccgp-jilin.gov.cn" target="_blank">吉林</a>
+    <a class="btn outline" href="http://www.ccgp-heilongj.gov.cn" target="_blank">黑龙江</a>
+    <a class="btn outline" href="http://www.ccgp-shanghai.gov.cn" target="_blank">上海</a>
+    <a class="btn outline" href="http://www.ccgp-jiangsu.gov.cn" target="_blank">江苏</a>
+    <a class="btn outline" href="http://www.ccgp-zhejiang.gov.cn" target="_blank">浙江</a>
+    <a class="btn outline" href="http://www.ccgp-anhui.gov.cn" target="_blank">安徽</a>
+    <a class="btn outline" href="http://www.ccgp-fujian.gov.cn" target="_blank">福建</a>
+    <a class="btn outline" href="http://www.ccgp-jiangxi.gov.cn" target="_blank">江西</a>
+    <a class="btn outline" href="http://www.ccgp-shandong.gov.cn" target="_blank">山东</a>
+    <a class="btn outline" href="http://www.ccgp-henan.gov.cn" target="_blank">河南</a>
+    <a class="btn outline" href="http://www.ccgp-hubei.gov.cn" target="_blank">湖北</a>
+    <a class="btn outline" href="http://www.ccgp-hunan.gov.cn" target="_blank">湖南</a>
+    <a class="btn outline" href="https://gdgpo.czt.gd.gov.cn" target="_blank">广东</a>
+    <a class="btn outline" href="http://www.ccgp-guangxi.gov.cn" target="_blank">广西</a>
+    <a class="btn outline" href="https://www.ccgp-hainan.gov.cn" target="_blank">海南</a>
+    <a class="btn outline" href="https://www.ccgp-chongqing.gov.cn" target="_blank">重庆</a>
+    <a class="btn outline" href="http://www.ccgp-sichuan.gov.cn" target="_blank">四川</a>
+    <a class="btn outline" href="https://gzgp.zbytb.com" target="_blank">贵州</a>
+    <a class="btn outline" href="http://www.yngp.com" target="_blank">云南</a>
+    <a class="btn outline" href="http://www.ccgp-xizang.gov.cn" target="_blank">西藏</a>
+    <a class="btn outline" href="http://www.ccgp-shaanxi.gov.cn" target="_blank">陕西</a>
+    <a class="btn outline" href="http://www.ccgp-gansu.gov.cn" target="_blank">甘肃</a>
+    <a class="btn outline" href="http://www.ccgp-qinghai.gov.cn" target="_blank">青海</a>
+    <a class="btn outline" href="http://www.ccgp-ningxia.gov.cn" target="_blank">宁夏</a>
+    <a class="btn outline" href="http://www.ccgp-xinjiang.gov.cn" target="_blank">新疆</a>
+  </div>
+</div>
+
+<!-- 三、大型央企采购平台 -->
+<div class="section">
+  <h2>大型央企采购平台</h2>
+  <div class="grid">
+    <a class="btn" href="https://ecp.sgcc.com.cn" target="_blank">国家电网 ECP</a>
+    <a class="btn" href="http://www.bidding.csg.cn" target="_blank">南方电网</a>
+    <a class="btn" href="https://www.e-ceic.com" target="_blank">国家能源集团</a>
+    <a class="btn" href="https://www.espic.com.cn" target="_blank">国家电投</a>
+    <a class="btn" href="https://ec.chng.com.cn" target="_blank">中国华能</a>
+    <a class="btn" href="https://www.cdt-ec.com" target="_blank">中国大唐</a>
+    <a class="btn" href="https://www.chdtp.com" target="_blank">中国华电</a>
+    <a class="btn" href="https://eps.ctg.com.cn" target="_blank">中国三峡</a>
+    <a class="btn" href="https://www.cnncecp.com" target="_blank">中核集团</a>
+    <a class="btn" href="https://www.cnpcbidding.com" target="_blank">中国石油</a>
+    <a class="btn" href="https://ec.sinopec.com" target="_blank">中国石化</a>
+    <a class="btn" href="https://buy.cnooc.com.cn" target="_blank">中国海油</a>
+    <a class="btn" href="https://www.yzw.cn" target="_blank">中国建筑·云筑网</a>
+    <a class="btn" href="https://ecm.crcc.cn" target="_blank">中国铁建</a>
+    <a class="btn" href="https://jzcg.ccccltd.cn" target="_blank">中国交建</a>
+    <a class="btn" href="https://bid.powerchina.cn" target="_blank">中国电建</a>
+    <a class="btn" href="https://ec.ceec.net.cn" target="_blank">中国能建</a>
+    <a class="btn" href="https://caigou.chinatelecom.com.cn" target="_blank">中国电信</a>
+    <a class="btn" href="https://b2b.10086.cn" target="_blank">中国移动</a>
+    <a class="btn" href="http://www.chinaunicombidding.cn" target="_blank">中国联通</a>
+  </div>
+</div>
+
+<!-- 四、已收录大型平台（原有） -->
+<div class="section">
+  <h2>重点大型采购平台</h2>
+  <div class="grid grid-2">
+    <a class="btn" href="https://ec.jsgx.net" target="_blank">江苏国采</a>
+    <a class="btn" href="https://eproport.crecgec.com" target="_blank">中国中铁·鲁班</a>
+    <a class="btn" href="https://supportal.crccep.cn" target="_blank">华润守正</a>
+    <a class="btn" href="https://igsp.sany.com.cn" target="_blank">三一集团</a>
+    <a class="btn" href="https://www.szecp.com.cn" target="_blank">深圳交易集团</a>
+    <a class="btn" href="https://supplier.cncecyc.com" target="_blank">中国化学</a>
+  </div>
+  <hr>
+  <div class="grid">
+    <a class="btn" href="https://www.sdicc.com.cn" target="_blank">山东高速</a>
+    <a class="btn" href="https://www.ggzy.gov.cn" target="_blank">全国公共资源交易平台</a>
+    <a class="btn" href="https://www.cebpubservice.com" target="_blank">招标投标公共服务平台</a>
+    <a class="btn outline" href="http://www.ccgp.gov.cn" target="_blank">中国政府采购网</a>
+  </div>
+</div>
+
+</div>
+<div class="footer">
+  共收录 70+ 平台 · 更新时间 2026-06-24 · 创美机电
+</div>
+
+</body>
+</html>
