@@ -43,9 +43,9 @@
     box-shadow: var(--shadow-sm);
   }
   .top-bar-inner {
-    max-width: 1360px;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 14px 32px;
+    padding: 12px 28px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -83,7 +83,7 @@
   .container {
     max-width: 1360px;
     margin: 0 auto;
-    padding: 24px 32px;
+    padding: 20px 28px;
   }
 
   /* ===== 关键词栏 ===== */
@@ -121,15 +121,15 @@
   /* ===== 平台网格 ===== */
   .platform-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 14px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
     margin-bottom: 32px;
   }
   .platform-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 18px;
+    padding: 14px 16px;
     box-shadow: var(--shadow);
     transition: box-shadow 0.2s, transform 0.15s;
     display: flex;
@@ -143,10 +143,10 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .platform-card .platform-name {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 700;
   }
   .platform-card .platform-domain {
@@ -169,12 +169,12 @@
   .platform-card .desc {
     font-size: 12px;
     color: var(--text-secondary);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     line-height: 1.4;
   }
   .platform-card .actions {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     margin-top: auto;
   }
@@ -182,9 +182,9 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: 12px;
     font-weight: 500;
     text-decoration: none;
     transition: background 0.15s;
@@ -306,14 +306,14 @@
   }
 
   /* ===== 响应式 ===== */
-  @media (max-width: 768px) {
-    .container { padding: 16px; }
-    .top-bar-inner { padding: 12px 16px; }
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .top-bar-inner { padding: 10px 12px; }
     .platform-grid { grid-template-columns: 1fr; }
     .top-bar h1 { font-size: 18px; }
   }
   @media (min-width: 1200px) {
-    .platform-grid { grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
+    .platform-grid { grid-template-columns: repeat(3, 1fr); }
   }
 </style>
 </head>
