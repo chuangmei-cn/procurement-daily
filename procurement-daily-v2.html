@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>采购平台每日巡检 - 水泵·防汛·应急</title>
-<style>  * { margin: 0; padding: 0; box-sizing: border-box; }
+<title>采购平台每日巡检</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, "Microsoft YaHei", "PingFang SC", sans-serif;
     background: #f0f2f5;
     color: #333;
-    padding: 0;
     min-height: 100vh;
   }
   .top-bar {
@@ -23,7 +23,7 @@
   .top-bar-inner {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 12px 24px;
+    padding: 10px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -37,7 +37,7 @@
     align-items: center;
     gap: 8px;
   }
-  .top-bar h1 .count-badge {
+  .top-bar h1 .badge {
     font-size: 11px;
     font-weight: 500;
     background: #e8f0fe;
@@ -49,24 +49,74 @@
     font-size: 12px;
     color: #999;
   }
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 16px 24px;
+  .container { max-width: 1200px; margin: 0 auto; padding: 14px 24px 8px; }
+
+  /* 搜索栏 */
+  .search-area {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
   }
-  .tags {
+  .search-area input {
+    flex: 1;
+    min-width: 180px;
+    max-width: 360px;
+    padding: 7px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .search-area input:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
+  }
+  .search-area .filter-btns {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    padding: 5px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    font-weight: 500;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.12s;
+    color: #666;
+  }
+  .filter-btn:hover { border-color: #1a73e8; color: #1a73e8; }
+  .filter-btn.active { background: #1a73e8; color: #fff; border-color: #1a73e8; }
+  .search-area .clear-btn {
+    font-size: 12px;
+    color: #999;
+    cursor: pointer;
+    background: none;
+    border: none;
+    display: none;
+  }
+  .search-area .clear-btn.show { display: inline; }
+  .search-area .clear-btn:hover { color: #e53e3e; }
+  .search-stats {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 10px;
+  }
+
+  .keywords-bar {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
   }
-  .tags .label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #666;
-  }
-  .tag {
+  .keywords-bar .label { font-size: 12px; font-weight: 600; color: #666; }
+  .kw-tag {
     background: #e8f0fe;
     color: #1a73e8;
     padding: 3px 12px;
@@ -74,27 +124,22 @@
     font-size: 12px;
     font-weight: 500;
   }
-  .tag::before { content: "#"; opacity: 0.5; margin-right: 1px; }
-  .tags .hint {
-    font-size: 11px;
-    color: #aaa;
-    margin-left: 4px;
-  }
+  .kw-tag::before { content: "#"; opacity: 0.5; margin-right: 1px; }
+  .keywords-bar .hint { font-size: 11px; color: #bbb; margin-left: 4px; }
+
   .section {
     background: #fff;
     border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 12px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     border: 1px solid #eef0f2;
   }
   .section h2 {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     color: #1a73e8;
-    border-left: 3px solid #1a73e8;
-    padding-left: 10px;
     display: flex;
     align-items: center;
     gap: 6px;
@@ -104,79 +149,59 @@
     font-weight: 400;
     color: #999;
   }
-  .grid {
-    display: grid;
-    gap: 6px;
-  }
-  /* 数量多的用 4 列，适中用 3 列，少用 2 列 */
+  .grid { display: grid; gap: 5px; }
   .grid-4 { grid-template-columns: repeat(4, 1fr); }
   .grid-3 { grid-template-columns: repeat(3, 1fr); }
   .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
   .btn {
-    display: block;
-    width: 100%;
-    text-align: center;
-    padding: 7px 4px;
-    background: #f7f8fa;
-    color: #333;
-    text-decoration: none;
-    border-radius: 5px;
+    display: block; width: 100%; text-align: center;
+    padding: 6px 4px;
+    background: #f7f8fa; color: #333;
+    text-decoration: none; border-radius: 5px;
     font-size: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     border: 1px solid transparent;
     transition: all 0.12s;
   }
-  .btn:hover {
-    background: #e8f0fe;
-    color: #1a73e8;
-    border-color: #1a73e8;
-  }
+  .btn:hover { background: #e8f0fe; color: #1a73e8; border-color: #1a73e8; }
   .btn:active { background: #d2e3fc; }
-  .btn.primary {
-    background: #1a73e8;
-    color: #fff;
-    font-weight: 500;
-  }
-  .btn.primary:hover {
-    background: #1557b0;
-    border-color: #1557b0;
-  }
   .btn.outline {
-    background: #fff;
-    color: #1a73e8;
+    background: #fff; color: #1a73e8;
     border: 1px solid #1a73e8;
   }
-  .btn.outline:hover {
-    background: #e8f0fe;
-  }
+  .btn.outline:hover { background: #e8f0fe; }
+
   .footer {
     text-align: center;
     color: #bbb;
     font-size: 11px;
-    padding: 12px 0 24px;
+    padding: 10px 0 20px;
   }
-  hr {
-    border: none;
-    border-top: 1px dashed #e5e7eb;
-    margin: 10px 0;
+  hr { border: none; border-top: 1px dashed #e5e7eb; margin: 8px 0; }
+
+  /* hidable sections */
+  .section.hidden { display: none; }
+  .highlight { animation: hlFlash 1.5s ease; }
+  @keyframes hlFlash {
+    0% { background: #fef3c7; }
+    100% { background: #f7f8fa; }
   }
 
-  /* 响应式 */
   @media (max-width: 900px) {
     .grid-4 { grid-template-columns: repeat(3, 1fr); }
     .grid-3 { grid-template-columns: repeat(2, 1fr); }
   }
   @media (max-width: 600px) {
     .grid-4, .grid-3, .grid-2 { grid-template-columns: repeat(2, 1fr); }
-    .container { padding: 12px; }
-    .top-bar-inner { padding: 10px 16px; }
-    .top-bar h1 { font-size: 16px; }
+    .container { padding: 10px; }
+    .top-bar-inner { padding: 8px 14px; }
+    .search-area input { max-width: 100%; }
   }
   @media (max-width: 400px) {
     .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-  }</style>
+  }
+</style>
 </head>
 <body>
 
@@ -184,24 +209,43 @@
   <div class="top-bar-inner">
     <h1>
       采购平台每日巡检
-      <span class="count-badge">70+ 平台</span>
+      <span class="badge">92 个平台</span>
     </h1>
-    <div class="sub">周一到周六 8:30 · 关键词：水泵 防汛 应急</div>
+    <div class="sub">周一到周六 8:30 · 登入搜索：水泵 防汛 应急</div>
   </div>
 </div>
 
 <div class="container">
-  <div class="tags">
+
+  <div class="keywords-bar">
     <span class="label">关键词</span>
-    <span class="tag">水泵</span>
-    <span class="tag">防汛</span>
-    <span class="tag">应急</span>
-    <span class="hint">点击下方各平台按钮，登录后搜索以上关键词</span>
+    <span class="kw-tag">水泵</span>
+    <span class="kw-tag">防汛</span>
+    <span class="kw-tag">应急</span>
+    <span class="hint">点击下方平台跳转 → 登录 → 搜索关键词</span>
   </div>
 
-<!-- 一、省级公共资源交易平台 -->
-<div class="section">
-  <h2>省级公共资源交易平台</h2>
+  <!-- 搜索栏 -->
+  <div class="search-area">
+    <input type="text" id="searchInput" placeholder="搜索平台名称…" oninput="filterPlatforms()">
+    <div class="filter-btns" id="filterBtns">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">全部</button>
+      <button class="filter-btn" data-filter="province" onclick="setFilter('province')">🏛️ 省级</button>
+      <button class="filter-btn" data-filter="power" onclick="setFilter('power')">⚡ 电力能源</button>
+      <button class="filter-btn" data-filter="petro" onclick="setFilter('petro')">🛢️ 石化</button>
+      <button class="filter-btn" data-filter="telecom" onclick="setFilter('telecom')">📡 通信</button>
+      <button class="filter-btn" data-filter="infra" onclick="setFilter('infra')">🚄 基建</button>
+      <button class="filter-btn" data-filter="key" onclick="setFilter('key')">🔑 重点</button>
+    </div>
+    <button class="clear-btn" id="clearBtn" onclick="clearSearch()">✕ 清除</button>
+  </div>
+  <div class="search-stats" id="searchStats"></div>
+
+  <div id="platformContainer">
+
+  <!-- 省级公共资源交易平台 -->
+  <div class="section" data-category="province">
+    <h2>🏛️ 省级公共资源交易平台 <span class="count">(31)</span></h2>
   <div class="grid grid-4">
     <a class="btn" href="https://ggzyfw.beijing.gov.cn" target="_blank">北京</a>
     <a class="btn" href="https://ggzy.zwfwb.tj.gov.cn" target="_blank">天津</a>
@@ -235,11 +279,11 @@
     <a class="btn" href="http://www.nxggzyjy.org" target="_blank">宁夏</a>
     <a class="btn" href="http://ggzy.xinjiang.gov.cn" target="_blank">新疆</a>
   </div>
-</div>
+  </div>
 
-<!-- 二、省级政府采购网 -->
-<div class="section">
-  <h2>省级政府采购网</h2>
+  <!-- 省级政府采购网 -->
+  <div class="section" data-category="province">
+    <h2>🏛️ 省级政府采购网 <span class="count">(31)</span></h2>
   <div class="grid grid-4">
     <a class="btn outline" href="http://www.ccgp-beijing.gov.cn" target="_blank">北京</a>
     <a class="btn outline" href="http://www.ccgp-tianjin.gov.cn" target="_blank">天津</a>
@@ -273,59 +317,130 @@
     <a class="btn outline" href="http://www.ccgp-ningxia.gov.cn" target="_blank">宁夏</a>
     <a class="btn outline" href="http://www.ccgp-xinjiang.gov.cn" target="_blank">新疆</a>
   </div>
-</div>
-
-<!-- 三、大型央企采购平台 -->
-<div class="section">
-  <h2>大型央企采购平台</h2>
-  <div class="grid">
-    <a class="btn" href="https://ecp.sgcc.com.cn" target="_blank">国家电网 ECP</a>
-    <a class="btn" href="http://www.bidding.csg.cn" target="_blank">南方电网</a>
-    <a class="btn" href="https://www.e-ceic.com" target="_blank">国家能源集团</a>
-    <a class="btn" href="https://www.espic.com.cn" target="_blank">国家电投</a>
-    <a class="btn" href="https://ec.chng.com.cn" target="_blank">中国华能</a>
-    <a class="btn" href="https://www.cdt-ec.com" target="_blank">中国大唐</a>
-    <a class="btn" href="https://www.chdtp.com" target="_blank">中国华电</a>
-    <a class="btn" href="https://eps.ctg.com.cn" target="_blank">中国三峡</a>
-    <a class="btn" href="https://www.cnncecp.com" target="_blank">中核集团</a>
-    <a class="btn" href="https://www.cnpcbidding.com" target="_blank">中国石油</a>
-    <a class="btn" href="https://ec.sinopec.com" target="_blank">中国石化</a>
-    <a class="btn" href="https://buy.cnooc.com.cn" target="_blank">中国海油</a>
-    <a class="btn" href="https://www.yzw.cn" target="_blank">中国建筑·云筑网</a>
-    <a class="btn" href="https://ecm.crcc.cn" target="_blank">中国铁建</a>
-    <a class="btn" href="https://jzcg.ccccltd.cn" target="_blank">中国交建</a>
-    <a class="btn" href="https://bid.powerchina.cn" target="_blank">中国电建</a>
-    <a class="btn" href="https://ec.ceec.net.cn" target="_blank">中国能建</a>
-    <a class="btn" href="https://caigou.chinatelecom.com.cn" target="_blank">中国电信</a>
-    <a class="btn" href="https://b2b.10086.cn" target="_blank">中国移动</a>
-    <a class="btn" href="http://www.chinaunicombidding.cn" target="_blank">中国联通</a>
   </div>
-</div>
 
-<!-- 四、已收录大型平台（原有） -->
-<div class="section">
-  <h2>重点大型采购平台</h2>
+  <!-- 央企采购平台 -->
+  <div class="section" data-category="central">
+    <h2>大型央企采购平台 <span class="count">(20)</span></h2>
+  <div class="grid grid-3">
+    <a class="btn" href="https://ecp.sgcc.com.cn" target="_blank">⚡ 国家电网 ECP</a>
+    <a class="btn" href="http://www.bidding.csg.cn" target="_blank">⚡ 南方电网</a>
+    <a class="btn" href="https://www.e-ceic.com" target="_blank">⚡ 国家能源集团</a>
+    <a class="btn" href="https://www.espic.com.cn" target="_blank">⚡ 国家电投</a>
+    <a class="btn" href="https://ec.chng.com.cn" target="_blank">⚡ 中国华能</a>
+    <a class="btn" href="https://www.cdt-ec.com" target="_blank">⚡ 中国大唐</a>
+    <a class="btn" href="https://www.chdtp.com" target="_blank">⚡ 中国华电</a>
+    <a class="btn" href="https://eps.ctg.com.cn" target="_blank">⚡ 中国三峡</a>
+    <a class="btn" href="https://www.cnncecp.com" target="_blank">⚡ 中核集团</a>
+    <a class="btn" href="https://www.cnpcbidding.com" target="_blank">🛢️ 中国石油</a>
+    <a class="btn" href="https://ec.sinopec.com" target="_blank">🛢️ 中国石化</a>
+    <a class="btn" href="https://buy.cnooc.com.cn" target="_blank">🛢️ 中国海油</a>
+    <a class="btn" href="https://www.yzw.cn" target="_blank">🚄 中国建筑·云筑网</a>
+    <a class="btn" href="https://ecm.crcc.cn" target="_blank">🚄 中国铁建</a>
+    <a class="btn" href="https://jzcg.ccccltd.cn" target="_blank">🚄 中国交建</a>
+    <a class="btn" href="https://bid.powerchina.cn" target="_blank">⚡ 中国电建</a>
+    <a class="btn" href="https://ec.ceec.net.cn" target="_blank">⚡ 中国能建</a>
+    <a class="btn" href="https://caigou.chinatelecom.com.cn" target="_blank">📡 中国电信</a>
+    <a class="btn" href="https://b2b.10086.cn" target="_blank">📡 中国移动</a>
+    <a class="btn" href="http://www.chinaunicombidding.cn" target="_blank">📡 中国联通</a>
+  </div>
+  </div>
+
+  <!-- 重点大型平台 -->
+  <div class="section" data-category="key">
+    <h2>🔑 重点大型采购平台 <span class="count">(10)</span></h2>
   <div class="grid grid-2">
-    <a class="btn" href="https://ec.jsgx.net" target="_blank">江苏国采</a>
-    <a class="btn" href="https://eproport.crecgec.com" target="_blank">中国中铁·鲁班</a>
-    <a class="btn" href="https://supportal.crccep.cn" target="_blank">华润守正</a>
-    <a class="btn" href="https://igsp.sany.com.cn" target="_blank">三一集团</a>
-    <a class="btn" href="https://www.szecp.com.cn" target="_blank">深圳交易集团</a>
-    <a class="btn" href="https://supplier.cncecyc.com" target="_blank">中国化学</a>
+    <a class="btn" href="https://ec.jsgx.net" target="_blank">🔑 江苏国采</a>
+    <a class="btn" href="https://eproport.crecgec.com" target="_blank">🔑 中国中铁·鲁班</a>
+    <a class="btn" href="https://supportal.crccep.cn" target="_blank">🔑 华润守正</a>
+    <a class="btn" href="https://igsp.sany.com.cn" target="_blank">🔑 三一集团</a>
+    <a class="btn" href="https://www.szecp.com.cn" target="_blank">🔑 深圳交易集团</a>
+    <a class="btn" href="https://supplier.cncecyc.com" target="_blank">🔑 中国化学</a>
+    <a class="btn" href="https://www.sdicc.com.cn" target="_blank">🔑 山东高速</a>
+    <a class="btn" href="https://www.ggzy.gov.cn" target="_blank">🏛️ 全国公共资源交易平台</a>
+    <a class="btn" href="https://www.cebpubservice.com" target="_blank">🏛️ 招标投标公共服务平台</a>
+    <a class="btn" href="http://www.ccgp.gov.cn" target="_blank">🏛️ 中国政府采购网</a>
   </div>
-  <hr>
-  <div class="grid">
-    <a class="btn" href="https://www.sdicc.com.cn" target="_blank">山东高速</a>
-    <a class="btn" href="https://www.ggzy.gov.cn" target="_blank">全国公共资源交易平台</a>
-    <a class="btn" href="https://www.cebpubservice.com" target="_blank">招标投标公共服务平台</a>
-    <a class="btn outline" href="http://www.ccgp.gov.cn" target="_blank">中国政府采购网</a>
+  </div>
+
+  </div>
+
+  <div class="footer">
+    共收录 92 个采购平台 · 更新 2026-06-24 · 创美机电
   </div>
 </div>
 
-</div>
-<div class="footer">
-  共收录 70+ 平台 · 更新时间 2026-06-24 · 创美机电
-</div>
+<script>
+var currentFilter = 'all';
+var platformButtons = [];
+
+function initPlatforms() {
+  // Gather all buttons with their category info
+  var sections = document.querySelectorAll('#platformContainer .section');
+  sections.forEach(function(sec) {
+    var cat = sec.getAttribute('data-category');
+    var btns = sec.querySelectorAll('.btn');
+    btns.forEach(function(btn) {
+      platformButtons.push({ el: btn, section: sec, category: cat, name: btn.textContent.trim() });
+    });
+  });
+}
+
+function filterPlatforms() {
+  var q = document.getElementById('searchInput').value.trim().toLowerCase();
+  var stats = document.getElementById('searchStats');
+  var clearBtn = document.getElementById('clearBtn');
+
+  if (q) {
+    clearBtn.classList.add('show');
+  } else {
+    clearBtn.classList.remove('show');
+  }
+
+  var visibleCount = 0;
+
+  platformButtons.forEach(function(pb) {
+    var match = !q || pb.name.toLowerCase().includes(q);
+    var catMatch = currentFilter === 'all' || pb.category === currentFilter;
+    pb.el.style.display = (match && catMatch) ? '' : 'none';
+    if (match && catMatch) visibleCount++;
+  });
+
+  // Show/hide sections based on visible children
+  var sections = document.querySelectorAll('#platformContainer .section');
+  sections.forEach(function(sec) {
+    var visible = Array.from(sec.querySelectorAll('.btn')).some(function(b) { return b.style.display !== 'none'; });
+    sec.classList.toggle('hidden', !visible);
+  });
+
+  if (q) {
+    stats.textContent = '🔍 "' + q + '" 匹配 ' + visibleCount + ' 个平台';
+  } else {
+    stats.textContent = currentFilter === 'all' ? '' : getFilterLabel(currentFilter) + ' · 共 ' + visibleCount + ' 个平台';
+    if (currentFilter === 'all') stats.textContent = '';
+  }
+}
+
+function setFilter(filter) {
+  currentFilter = filter;
+  document.querySelectorAll('#filterBtns .filter-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-filter') === filter);
+  });
+  filterPlatforms();
+}
+
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  filterPlatforms();
+}
+
+function getFilterLabel(filter) {
+  var map = { province: '🏛️ 省级平台', power: '⚡ 电力能源', petro: '🛢️ 石化', telecom: '📡 通信', infra: '🚄 基建', key: '🔑 重点' };
+  return map[filter] || filter;
+}
+
+initPlatforms();
+</script>
 
 </body>
 </html>
